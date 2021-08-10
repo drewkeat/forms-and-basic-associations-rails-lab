@@ -4,19 +4,23 @@ class Song < ActiveRecord::Base
   has_many :notes
 
   def artist_name=(name)
-    self.artist.find_or_create_by!(name)
-    
+    self.artist = Artist.find_or_create_by(name: name)
   end
 
   def artist_name
-    self.artist.name
+    self.artist ? self.artist.name : nil
   end
 
   def note_contents=(contents)
-    self.notes.map {|note| note.content}
+    contents.each do |content|
+      if !content.empty?
+        self.notes.build(content: content)
+        self.save
+      end
+    end
   end
 
   def note_contents
-
+    self.notes.map {|note| note.content}
   end
 end
